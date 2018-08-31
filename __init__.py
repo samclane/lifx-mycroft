@@ -1,0 +1,93 @@
+from adapt.intent import IntentBuilder
+from mycroft.skills.core import MycroftSkill, intent_handler
+from mycroft.util.log import LOG
+
+import lifxlan
+import lifxlan.utils
+from fuzzywuzzy import fuzz
+import webcolors
+
+
+class LifxSkill(MycroftSkill):
+
+    def __init__(self):
+        super(LifxSkill, self).__init__(name="LifxSkill")
+
+        self.lifxlan = lifxlan.LifxLAN()
+        self.lights = {}
+        self.groups = {}
+
+    def initialize(self):
+        for light in self.lifxlan.get_lights():
+            light: lifxlan.Light = light
+            self.lights[light.label] = light
+            self.register_vocabulary(light.label, "Light")
+            LOG.info("{} was found".format(light.label))
+            if not (light.group in self.groups.keys()):
+                self.groups[light.group] = self.lifxlan.get_devices_by_group(light.group)
+                self.register_vocabulary(light.group, "Group")
+                LOG.info("Group {} was found".format(light.group))
+
+        for color_name in webcolors.css3_hex_to_names.values():
+            self.register_vocabulary(color_name, "Color")
+
+    def get_target_from_message(self, message):
+        if "Lights" in message.data:
+            target = self.get_fuzzy_value_from_dict(message.data["Light"], self.lights)
+            name = message.data["Light"]
+        elif "Groups" in message.data:
+            target = self.get_fuzzy_value_from_dict(message.data["Group"], self.groups)
+            name = message.data["Group"]
+        else:
+            assert False, "Triggered toggle intent without device or group."
+
+        return target, name
+
+    @staticmethod
+    def get_fuzzy_value_from_dict(key, dict_: dict):
+        best_score = 0
+        score = 0
+        best_item = None
+
+        for k, v in dict_.values():
+            score = fuzz.ratio(key, k)
+            if score > best_score:
+                best_score = score
+                best_item = v
+
+        return best_item
+
+    @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").one_of("Off", "On").build())
+    def handle_toggle_intent(self, message):
+        if "Off" in message.data:
+            power_status = False
+            status_str = "Off"
+        elif "On" in message.data:
+            power_status = True
+            status_str = "On"
+        else:
+            assert False, "Triggered toggle intent without On/Off keyword."
+
+        target, name = self.get_target_from_message(message)
+
+        target.set_power(power_status)
+
+        self.speak_dialog('Turn', {'name': name,
+                                   'status': status_str})
+
+    @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").require("Color").build())
+    def handle_color_intent(self, message):
+        color_str = message.data["Color"]
+        rgb = webcolors.name_to_rgb(color_str)
+        hsbk = lifxlan.utils.RGBtoHSBK(rgb)
+
+        target, name = self.get_target_from_message(message)
+
+        target.set_color(hsbk)
+
+        self.speak_dialog('Turn', {'name': name,
+                                   'status': color_str})
+
+
+def create_skill():
+    return LifxSkill()
