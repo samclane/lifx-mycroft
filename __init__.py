@@ -20,13 +20,13 @@ class LifxSkill(MycroftSkill):
     def initialize(self):
         for light in self.lifxlan.get_lights():
             light: lifxlan.Light = light
-            self.lights[light.label] = light
-            self.register_vocabulary(light.label, "Light")
-            LOG.info("{} was found".format(light.label))
-            if not (light.group in self.groups.keys()):
-                self.groups[light.group] = self.lifxlan.get_devices_by_group(light.group)
-                self.register_vocabulary(light.group, "Group")
-                LOG.info("Group {} was found".format(light.group))
+            self.lights[light.get_label()] = light
+            self.register_vocabulary(light.get_label(), "Light")
+            LOG.info("{} was found".format(light.get_label()))
+            if not (light.get_group_label() in self.groups.keys()):
+                self.groups[light.get_group_label()] = self.lifxlan.get_devices_by_group(light.get_group_label())
+                self.register_vocabulary(light.get_group_label(), "Group")
+                LOG.info("Group {} was found".format(light.get_group_label()))
 
         for color_name in webcolors.css3_hex_to_names.values():
             self.register_vocabulary(color_name, "Color")
