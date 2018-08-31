@@ -32,14 +32,14 @@ class LifxSkill(MycroftSkill):
             self.register_vocabulary(color_name, "Color")
 
     def get_target_from_message(self, message):
-        if "Lights" in message.data:
+        if "Lights" in message.data.keys():
             target = self.get_fuzzy_value_from_dict(message.data["Light"], self.lights)
             name = message.data["Light"]
-        elif "Groups" in message.data:
+        elif "Groups" in message.data.keys():
             target = self.get_fuzzy_value_from_dict(message.data["Group"], self.groups)
             name = message.data["Group"]
         else:
-            assert False, "Triggered toggle intent without device or group."
+            assert False, "Triggered intent without device or group. Message: {}".format(message.data["Utterance"])
 
         return target, name
 
@@ -59,10 +59,10 @@ class LifxSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").one_of("Off", "On").build())
     def handle_toggle_intent(self, message):
-        if "Off" in message.data:
+        if "Off" in message.data.keys():
             power_status = False
             status_str = "Off"
-        elif "On" in message.data:
+        elif "On" in message.data.keys():
             power_status = True
             status_str = "On"
         else:
