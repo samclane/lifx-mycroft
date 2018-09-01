@@ -60,7 +60,7 @@ class LifxSkill(MycroftSkill):
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").one_of("Off", "On")
                     .optionally("_TestRunner").build())
     def handle_toggle_intent(self, message):
-        #if message.data.get("_TestRunner"):
+        # if message.data.get("_TestRunner"):
         #    return
         if "Off" in message.data:
             power_status = False
@@ -73,7 +73,8 @@ class LifxSkill(MycroftSkill):
 
         target, name = self.get_target_from_message(message)
 
-        target.set_power(power_status)
+        if not message.data.get("_TestRunner"):
+            target.set_power(power_status)
 
         self.speak_dialog('Turn', {'name': name,
                                    'status': status_str})
@@ -81,15 +82,14 @@ class LifxSkill(MycroftSkill):
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").require("Color")
                     .optionally("_TestRunner").build())
     def handle_color_intent(self, message):
-        #if message.data.get("_TestRunner"):
-        #    return
         color_str = message.data["Color"]
         rgb = webcolors.name_to_rgb(color_str)
         hsbk = lifxlan.utils.RGBtoHSBK(rgb)
 
         target, name = self.get_target_from_message(message)
 
-        target.set_color(hsbk)
+        if not message.data.get("_TestRunner"):
+            target.set_color(hsbk)
 
         self.speak_dialog('Turn', {'name': name,
                                    'status': color_str})

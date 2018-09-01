@@ -1,9 +1,9 @@
 {
-  "utterance": "turn off bedroom light",
-  "intent_type": "handle_toggle_intent",
+  "utterance": "turn the bedroom light red",
+  "intent_type": "handle_color_intent",
   "intent": {
     "Turn": "turn",
-    "Off": "off",
+    "Color": "red",
     "Light": "bedroom"
   },
   "set_context": {"_TestRunner": "data", "test": ""}
