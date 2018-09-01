@@ -6,5 +6,6 @@
     "Color": "red",
     "Light": "bedroom"
   },
+  "expected_dialog": "Color",
   "set_context": {"_TestRunner": "data", "test": ""}
 }

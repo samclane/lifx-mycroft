@@ -6,5 +6,6 @@
     "Off": "off",
     "Light": "bedroom"
   },
+  "expected_dialog": "Switch",
   "set_context": {"_TestRunner": "data", "test": ""}
 }

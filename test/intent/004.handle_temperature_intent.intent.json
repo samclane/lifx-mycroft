@@ -1,0 +1,11 @@
+{
+  "utterance": "turn up the bedroom light temperature",
+  "intent_type": "handle_temperature_intent",
+  "intent": {
+    "Temperature": "temperature",
+    "Light": "Bedroom",
+    "Increase": "up"
+  },
+  "expected_dialog": "Temperature",
+  "set_context": {"_TestRunner": "data", "test": ""}
+}

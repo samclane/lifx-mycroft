@@ -95,20 +95,19 @@ class LifxSkill(MycroftSkill):
         self.speak_dialog('Color', {'name': name,
                                     'color': color_str})
 
-    @intent_handler(IntentBuilder("").one_of("Brighten", "Darken").require("Light")
+    @intent_handler(IntentBuilder("").optionally("Turn").require("Light").one_of("Increase", "Decrease")
                     .optionally("_TestRunner").build())
     def handle_dim_intent(self, message):
-        if "Brighten" in message.data:
+        if "Increase" in message.data:
             is_darkening = False
             status_str = "Brighten"
-        elif "Darken" in message.data:
+        elif "Decrease" in message.data:
             is_darkening = True
             status_str = "Darken"
         else:
             assert False, "Triggered hue intent without Darken/Brighten keyword."
 
         target, name = self.get_target_from_message(message)
-        target: lifxlan.Light = target
 
         if not message.data.get("_TestRunner"):
             current_brightness = target.get_color()[BRIGHTNESS]
@@ -117,6 +116,29 @@ class LifxSkill(MycroftSkill):
 
         self.speak_dialog('Dim', {'name': name,
                                   'change': status_str})
+
+    @intent_handler(IntentBuilder("").require("Temperature").require("Turn").require("Light")
+                    .one_of("Increase", "Decrease").optionally("_TestRunner"))
+    def handle_temperature_intent(self, message):
+        if "Increase" in message.data:
+            is_cooling = False
+            status_str = "Hot"
+        elif "Decrease" in message.data:
+            is_cooling = True
+            status_str = "Cold"
+        else:
+            assert False, "Triggered temperature intent without Hot/Cold keyword."
+
+        target, name = self.get_target_from_message(message)
+        target: lifxlan.Light = target
+
+        if not message.data.get("_TestRunner"):
+            current_temperature = target.get_color()[KELVIN]
+            new_temperature = max(min(current_temperature + self.dim_step * (-1 if is_cooling else 1), 9000), 2500)
+            target.set_colortemp(new_temperature)
+
+        self.speak_dialog('Temperature', {'name': name,
+                                          'temperature': status_str})
 
 
 def create_skill():
