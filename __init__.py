@@ -136,7 +136,7 @@ class LifxSkill(MycroftSkill):
         if not message.data.get("_TestRunner"):
             current_temperature = target.get_color()[KELVIN]
             new_temperature = \
-                max(min(current_temperature + self.temperature_step * (-1 if is_cooling else 1), 9000), 2500)
+                max(min(current_temperature + self.temperature_step * (1 if is_cooling else -1), 9000), 2500)
             target.set_colortemp(new_temperature)
 
         self.speak_dialog('Temperature', {'name': name,
