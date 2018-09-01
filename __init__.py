@@ -32,14 +32,14 @@ class LifxSkill(MycroftSkill):
             self.register_vocabulary(color_name, "Color")
 
     def get_target_from_message(self, message):
-        if "Lights" in message.data.keys():
+        if "Light" in message.data:
             target = self.get_fuzzy_value_from_dict(message.data["Light"], self.lights)
             name = message.data["Light"]
-        elif "Groups" in message.data.keys():
+        elif "Group" in message.data:
             target = self.get_fuzzy_value_from_dict(message.data["Group"], self.groups)
             name = message.data["Group"]
         else:
-            assert False, "Triggered intent without device or group. Message: {}".format(message.data["Utterance"])
+            assert False, "Triggered intent without Light or Group. Message: {}".format(message.data["utterance"])
 
         return target, name
 
@@ -49,7 +49,7 @@ class LifxSkill(MycroftSkill):
         score = 0
         best_item = None
 
-        for k, v in dict_.values():
+        for k, v in dict_.items():
             score = fuzz.ratio(key, k)
             if score > best_score:
                 best_score = score
@@ -57,12 +57,15 @@ class LifxSkill(MycroftSkill):
 
         return best_item
 
-    @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").one_of("Off", "On").build())
+    @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").one_of("Off", "On")
+                    .optionally("_TestRunner").build())
     def handle_toggle_intent(self, message):
-        if "Off" in message.data.keys():
+        #if message.data.get("_TestRunner"):
+        #    return
+        if "Off" in message.data:
             power_status = False
             status_str = "Off"
-        elif "On" in message.data.keys():
+        elif "On" in message.data:
             power_status = True
             status_str = "On"
         else:
@@ -75,8 +78,11 @@ class LifxSkill(MycroftSkill):
         self.speak_dialog('Turn', {'name': name,
                                    'status': status_str})
 
-    @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").require("Color").build())
+    @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").require("Color")
+                    .optionally("_TestRunner").build())
     def handle_color_intent(self, message):
+        #if message.data.get("_TestRunner"):
+        #    return
         color_str = message.data["Color"]
         rgb = webcolors.name_to_rgb(color_str)
         hsbk = lifxlan.utils.RGBtoHSBK(rgb)
