@@ -12,6 +12,7 @@ HUE, SATURATION, BRIGHTNESS, KELVIN = range(4)
 
 class LifxSkill(MycroftSkill):
     dim_step = int(.10 * 65535)
+    temperature_step = int(.10 * (9000 - 2500))
 
     def __init__(self):
         super(LifxSkill, self).__init__(name="LifxSkill")
@@ -134,7 +135,8 @@ class LifxSkill(MycroftSkill):
 
         if not message.data.get("_TestRunner"):
             current_temperature = target.get_color()[KELVIN]
-            new_temperature = max(min(current_temperature + self.dim_step * (-1 if is_cooling else 1), 9000), 2500)
+            new_temperature = \
+                max(min(current_temperature + self.temperature_step * (-1 if is_cooling else 1), 9000), 2500)
             target.set_colortemp(new_temperature)
 
         self.speak_dialog('Temperature', {'name': name,
