@@ -1,17 +1,23 @@
-To submit your skill, replace this file with text from 
-https://rawgit.com/MycroftAI/mycroft-skills/master/meta_editor.html
+# <img src='https://rawgithub.com/FortAwesome/Font-Awesome/master/advanced-options/raw-svg/solid/lightbulb.svg' card_color='#440099' width='50' height='50' style='vertical-align:bottom'/> lifx-mycroft
+A mycroft skill to control LIFX brand smart-bulbs.
 
-
-## lifx-mycroft
-A mycroft skill to control LIFX brand smartlights
-
-## Description 
-A mycroft skill to control LIFX brand smartlights
+## About 
+Allows users to interact with the LIFX-brand smartbulbs on their home network through Mycroft. Can change power, brightness, color, and color-temperature of individual Lights and predefined Groups. 
 
 ## Examples 
-* "Turn off the bathroom light."
-* "Turn the bedroom light red."
-* "Turn the kitchen lights off"
+* "Turn off the bedroom light."
+* "Set the bedroom light yellow."
+* "Turn down the bedroom light."
+* "Increase the bedroom light temperature."
 
 ## Credits 
-Sawyer McLane
+Sawyer McLane (@samclane)
+
+## Category
+**IoT**
+
+## Tags
+#lifx
+#smartbulb
+#smartlight
+#home-automation
