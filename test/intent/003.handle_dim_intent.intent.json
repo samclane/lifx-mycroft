@@ -1,0 +1,9 @@
+{
+  "utterance": "brighten the bedroom light",
+  "intent_type": "handle_dim_intent",
+  "intent": {
+    "Brighten": "brighten",
+    "Light": "bedroom"
+  },
+  "set_context": {"_TestRunner": "data", "test": ""}
+}

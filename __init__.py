@@ -7,8 +7,11 @@ import lifxlan.utils
 from fuzzywuzzy import fuzz
 import webcolors
 
+HUE, SATURATION, BRIGHTNESS, KELVIN = range(4)
+
 
 class LifxSkill(MycroftSkill):
+    dim_step = int(.10 * 65535)
 
     def __init__(self):
         super(LifxSkill, self).__init__(name="LifxSkill")
@@ -60,8 +63,6 @@ class LifxSkill(MycroftSkill):
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").one_of("Off", "On")
                     .optionally("_TestRunner").build())
     def handle_toggle_intent(self, message):
-        # if message.data.get("_TestRunner"):
-        #    return
         if "Off" in message.data:
             power_status = False
             status_str = "Off"
@@ -76,8 +77,8 @@ class LifxSkill(MycroftSkill):
         if not message.data.get("_TestRunner"):
             target.set_power(power_status)
 
-        self.speak_dialog('Turn', {'name': name,
-                                   'status': status_str})
+        self.speak_dialog('Switch', {'name': name,
+                                     'status': status_str})
 
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").require("Color")
                     .optionally("_TestRunner").build())
@@ -91,8 +92,31 @@ class LifxSkill(MycroftSkill):
         if not message.data.get("_TestRunner"):
             target.set_color(hsbk)
 
-        self.speak_dialog('Turn', {'name': name,
-                                   'status': color_str})
+        self.speak_dialog('Color', {'name': name,
+                                   'color': color_str})
+
+    @intent_handler(IntentBuilder("").one_of("Brighten", "Darken").one_of("Light", "Group")
+                    .optionally("_TestRunner").build())
+    def handle_dim_intent(self, message):
+        if "Brighten" in message.data:
+            is_darkening = False
+            status_str = "Brighten"
+        elif "Darken" in message.data:
+            is_darkening = True
+            status_str = "Darken"
+        else:
+            assert False, "Triggered hue intent without Darken/Brighten keyword."
+
+        target, name = self.get_target_from_message(message)
+        target: lifxlan.Light = target
+
+        if not message.data.get("_TestRunner"):
+            current_brightness = target.get_color()[BRIGHTNESS]
+            new_brightness = max(min(current_brightness + self.dim_step * (-1 if is_darkening else 1), 65535), 0)
+            target.set_brightness(new_brightness)
+
+        self.speak_dialog('Dim', {'name': name,
+                                  'change': status_str})
 
 
 def create_skill():
