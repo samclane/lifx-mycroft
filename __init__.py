@@ -93,9 +93,9 @@ class LifxSkill(MycroftSkill):
             target.set_color(hsbk)
 
         self.speak_dialog('Color', {'name': name,
-                                   'color': color_str})
+                                    'color': color_str})
 
-    @intent_handler(IntentBuilder("").one_of("Brighten", "Darken").one_of("Light", "Group")
+    @intent_handler(IntentBuilder("").one_of("Brighten", "Darken").require("Light")
                     .optionally("_TestRunner").build())
     def handle_dim_intent(self, message):
         if "Brighten" in message.data:
