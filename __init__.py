@@ -12,6 +12,7 @@ MAX_VALUE = 65535
 MAX_COLORTEMP = 9000
 MIN_COLORTEMP = 2500
 STEP_PERCENT = .25
+TRANSITION = .5
 
 
 class LifxSkill(MycroftSkill):
@@ -134,7 +135,7 @@ class LifxSkill(MycroftSkill):
         if not message.data.get("_TestRunner"):
             current_brightness = target.get_color()[BRIGHTNESS]
             new_brightness = max(min(current_brightness + self.dim_step * (-1 if is_darkening else 1), MAX_VALUE), 0)
-            target.set_brightness(new_brightness)
+            target.set_brightness(new_brightness, duration=TRANSITION)
 
         self.speak_dialog('Dim', {'name': name,
                                   'change': status_str})
