@@ -1,0 +1,18 @@
+{
+  "name": "lifx-mycroft",
+  "skillMetadata": {
+    "sections": [
+      {
+        "name": "Increment Percentage",
+        "fields": [
+          {
+            "name": "percent_step",
+            "type": "number",
+            "label": "Percent (%)",
+            "value": ".25"
+          }
+        ]
+      }
+    ]
+  }
+}

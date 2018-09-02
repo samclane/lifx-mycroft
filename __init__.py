@@ -11,11 +11,10 @@ HUE, SATURATION, BRIGHTNESS, KELVIN = range(4)
 MAX_VALUE = 65535
 MAX_COLORTEMP = 9000
 MIN_COLORTEMP = 2500
+STEP_PERCENT = .25
 
 
 class LifxSkill(MycroftSkill):
-    dim_step = int(.10 * MAX_VALUE)
-    temperature_step = int(.10 * (MAX_COLORTEMP - MIN_COLORTEMP))
 
     def __init__(self):
         super(LifxSkill, self).__init__(name="LifxSkill")
@@ -28,15 +27,24 @@ class LifxSkill(MycroftSkill):
         for light in self.lifxlan.get_lights():
             light: lifxlan.Light = light
             self.lights[light.get_label()] = light
-            self.register_vocabulary(light.get_label(), "Light")
-            LOG.info("{} was found".format(light.get_label()))
-            if not (light.get_group_label() in self.groups.keys()):
-                self.groups[light.get_group_label()] = self.lifxlan.get_devices_by_group(light.get_group_label())
-                self.register_vocabulary(light.get_group_label(), "Group")
-                LOG.info("Group {} was found".format(light.get_group_label()))
+            self.register_vocabulary(light.label, "Light")
+            LOG.info("{} was found".format(light.label))
+            group_label = light.get_group_label()
+            if not (group_label in self.groups.keys()):
+                self.groups[group_label] = self.lifxlan.get_devices_by_group(group_label)
+                self.register_vocabulary(group_label, "Group")
+                LOG.info("Group {} was found".format(group_label))
 
         for color_name in webcolors.css3_hex_to_names.values():
             self.register_vocabulary(color_name, "Color")
+
+    @property
+    def dim_step(self):
+        return int(float(self.settings["percent_step"]) * MAX_VALUE)
+
+    @property
+    def temperature_step(self):
+        return int(float(self.settings["percent_step"]) * (MAX_COLORTEMP - MIN_COLORTEMP))
 
     def get_target_from_message(self, message):
         if "Light" in message.data:
