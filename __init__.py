@@ -98,7 +98,7 @@ class LifxSkill(MycroftSkill):
         target, name = self.get_target_from_message(message)
 
         if not message.data.get("_TestRunner"):
-            target.set_power(power_status)
+            target.set_power(power_status, duration=TRANSITION)
 
         self.speak_dialog('Switch', {'name': name,
                                      'status': status_str})
@@ -113,7 +113,7 @@ class LifxSkill(MycroftSkill):
         target, name = self.get_target_from_message(message)
 
         if not message.data.get("_TestRunner"):
-            target.set_color(hsbk)
+            target.set_color(hsbk, duration=TRANSITION)
 
         self.speak_dialog('Color', {'name': name,
                                     'color': color_str})
@@ -159,7 +159,7 @@ class LifxSkill(MycroftSkill):
             new_temperature = \
                 max(min(current_temperature + self.temperature_step * (1 if is_cooling else -1), MAX_COLORTEMP),
                     MIN_COLORTEMP)
-            target.set_colortemp(new_temperature)
+            target.set_colortemp(new_temperature, duration=TRANSITION)
 
         self.speak_dialog('Temperature', {'name': name,
                                           'temperature': status_str})
@@ -187,7 +187,7 @@ class LifxSkill(MycroftSkill):
         if not message.data.get("_TestRunner"):
             percent = int(message.data["Percent"].strip("%"))
             value = self.convert_percent_to_value(percent, type_)
-            func(value)
+            func(value, duration=TRANSITION)
 
         self.speak_dialog('SetPercent', {'name': name,
                                          'param': status_str,
