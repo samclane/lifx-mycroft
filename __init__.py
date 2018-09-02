@@ -8,11 +8,14 @@ from fuzzywuzzy import fuzz
 import webcolors
 
 HUE, SATURATION, BRIGHTNESS, KELVIN = range(4)
+MAX_VALUE = 65535
+MAX_COLORTEMP = 9000
+MIN_COLORTEMP = 2500
 
 
 class LifxSkill(MycroftSkill):
-    dim_step = int(.10 * 65535)
-    temperature_step = int(.10 * (9000 - 2500))
+    dim_step = int(.10 * MAX_VALUE)
+    temperature_step = int(.10 * (MAX_COLORTEMP - MIN_COLORTEMP))
 
     def __init__(self):
         super(LifxSkill, self).__init__(name="LifxSkill")
@@ -60,6 +63,16 @@ class LifxSkill(MycroftSkill):
                 best_item = v
 
         return best_item
+
+    @staticmethod
+    def convert_percent_to_value(percent, type_=BRIGHTNESS):
+        scale = percent / 100
+        if type_ == BRIGHTNESS or type_ == SATURATION:
+            return scale * MAX_VALUE
+        elif type_ == KELVIN:
+            return (scale * (MAX_COLORTEMP - MIN_COLORTEMP)) + MIN_COLORTEMP
+        else:
+            assert False, "Invalid type passed to percent. Must be BRIGHTNESS, SATURATION, or KELVIN"
 
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").one_of("Off", "On")
                     .optionally("_TestRunner").build())
@@ -112,7 +125,7 @@ class LifxSkill(MycroftSkill):
 
         if not message.data.get("_TestRunner"):
             current_brightness = target.get_color()[BRIGHTNESS]
-            new_brightness = max(min(current_brightness + self.dim_step * (-1 if is_darkening else 1), 65535), 0)
+            new_brightness = max(min(current_brightness + self.dim_step * (-1 if is_darkening else 1), MAX_VALUE), 0)
             target.set_brightness(new_brightness)
 
         self.speak_dialog('Dim', {'name': name,
@@ -131,16 +144,45 @@ class LifxSkill(MycroftSkill):
             assert False, "Triggered temperature intent without Hot/Cold keyword."
 
         target, name = self.get_target_from_message(message)
-        target: lifxlan.Light = target
 
         if not message.data.get("_TestRunner"):
             current_temperature = target.get_color()[KELVIN]
             new_temperature = \
-                max(min(current_temperature + self.temperature_step * (1 if is_cooling else -1), 9000), 2500)
+                max(min(current_temperature + self.temperature_step * (1 if is_cooling else -1), MAX_COLORTEMP),
+                    MIN_COLORTEMP)
             target.set_colortemp(new_temperature)
 
         self.speak_dialog('Temperature', {'name': name,
                                           'temperature': status_str})
+
+    @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group")
+                    .one_of("Brightness", "Temperature", "Saturation").require("Percent").optionally("_TestRunner")
+                    .build())
+    def handle_percent_intent(self, message):
+        target, name = self.get_target_from_message(message)
+        if "Brightness" in message.data:
+            func = target.set_brightness
+            status_str = "brightness"
+            type_ = BRIGHTNESS
+        elif "Temperature" in message.data:
+            func = target.set_colortemp
+            status_str = "temperature"
+            type_ = KELVIN
+        elif "Saturation" in message.data:
+            func = target.set_saturation
+            status_str = "saturation"
+            type_ = SATURATION
+        else:
+            assert False, "Triggered percent intent without Brightness/Temperature/Saturation keyword."
+
+        if not message.data.get("_TestRunner"):
+            percent = int(message.data["Percent"].strip("%"))
+            value = self.convert_percent_to_value(percent, type_)
+            func(value)
+
+        self.speak_dialog('SetPercent', {'name': name,
+                                         'param': status_str,
+                                         'value': message.data["Percent"]})
 
 
 def create_skill():
