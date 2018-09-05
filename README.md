@@ -4,6 +4,11 @@ A mycroft skill to control LIFX brand smart-bulbs.
 ## About 
 Allows users to interact with the LIFX-brand smartbulbs on their home network through Mycroft. Can change power, brightness, color, and color-temperature of individual Lights and predefined Groups. 
 
+## Installation
+This skill is currently in the skill acceptance process. In order to install, use Mycroft Skill Manager (msm):
+
+`msm install https://github.com/samclane/lifx-mycroft.git`
+
 ## Examples 
 * "Turn off the bedroom light."
 * "Set the bedroom light yellow."
