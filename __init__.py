@@ -119,11 +119,11 @@ class LifxSkill(MycroftSkill):
 
         target, name = self.get_target_from_message(message)
 
-        if not message.data.get("_TestRunner"):
-            target.set_power(power_status, duration=TRANSITION)
-
         self.speak_dialog('Switch', {'name': name,
                                      'status': status_str})
+
+        if not message.data.get("_TestRunner"):
+            target.set_power(power_status, duration=TRANSITION)
 
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").require("Color")
                     .optionally("_TestRunner").build())
@@ -134,11 +134,11 @@ class LifxSkill(MycroftSkill):
 
         target, name = self.get_target_from_message(message)
 
-        if not message.data.get("_TestRunner"):
-            target.set_color(hsbk, duration=TRANSITION)
-
         self.speak_dialog('Color', {'name': name,
                                     'color': color_str})
+
+        if not message.data.get("_TestRunner"):
+            target.set_color(hsbk, duration=TRANSITION)
 
     @intent_handler(IntentBuilder("").optionally("Turn").require("Light").one_of("Increase", "Decrease")
                     .optionally("_TestRunner").build())
@@ -154,13 +154,13 @@ class LifxSkill(MycroftSkill):
 
         target, name = self.get_target_from_message(message)
 
+        self.speak_dialog('Dim', {'name': name,
+                                  'change': status_str})
+
         if not message.data.get("_TestRunner"):
             current_brightness = target.get_color()[BRIGHTNESS]
             new_brightness = max(min(current_brightness + self.dim_step * (-1 if is_darkening else 1), MAX_VALUE), 0)
             target.set_brightness(new_brightness, duration=TRANSITION)
-
-        self.speak_dialog('Dim', {'name': name,
-                                  'change': status_str})
 
     @intent_handler(IntentBuilder("").require("Temperature").require("Turn").require("Light")
                     .one_of("Increase", "Decrease").optionally("_TestRunner"))
@@ -176,15 +176,15 @@ class LifxSkill(MycroftSkill):
 
         target, name = self.get_target_from_message(message)
 
+        self.speak_dialog('Temperature', {'name': name,
+                                          'temperature': status_str})
+
         if not message.data.get("_TestRunner"):
             current_temperature = target.get_color()[KELVIN]
             new_temperature = \
                 max(min(current_temperature + self.temperature_step * (1 if is_cooling else -1), MAX_COLORTEMP),
                     MIN_COLORTEMP)
             target.set_colortemp(new_temperature, duration=TRANSITION)
-
-        self.speak_dialog('Temperature', {'name': name,
-                                          'temperature': status_str})
 
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group")
                     .one_of("Brightness", "Temperature", "Saturation").require("Percent").optionally("_TestRunner")
@@ -206,14 +206,14 @@ class LifxSkill(MycroftSkill):
         else:
             assert False, "Triggered percent intent without Brightness/Temperature/Saturation keyword."
 
+        self.speak_dialog('SetPercent', {'name': name,
+                                         'param': status_str,
+                                         'value': message.data["Percent"]})
+
         if not message.data.get("_TestRunner"):
             percent = int(message.data["Percent"].strip("%"))
             value = self.convert_percent_to_value(percent, type_)
             func(value, duration=TRANSITION)
-
-        self.speak_dialog('SetPercent', {'name': name,
-                                         'param': status_str,
-                                         'value': message.data["Percent"]})
 
 
 def create_skill():
