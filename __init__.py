@@ -42,16 +42,21 @@ class LifxSkill(MycroftSkill):
         self.groups = {}
 
     def initialize(self):
-        for light in self.lifxlan.get_lights():
-            light: lifxlan.Light = light
-            self.lights[light.get_label()] = light
-            self.register_vocabulary(light.label, "Light")
-            LOG.info("{} was found".format(light.label))
-            group_label = light.get_group_label()
-            if not (group_label in self.groups.keys()):
-                self.groups[group_label] = self.lifxlan.get_devices_by_group(group_label)
-                self.register_vocabulary(group_label, "Group")
-                LOG.info("Group {} was found".format(group_label))
+        try:
+            for light in self.lifxlan.get_lights():
+                light: lifxlan.Light = light
+                self.lights[light.get_label()] = light
+                self.register_vocabulary(light.label, "Light")
+                LOG.info("{} was found".format(light.label))
+                group_label = light.get_group_label()
+                if not (group_label in self.groups.keys()):
+                    self.groups[group_label] = self.lifxlan.get_devices_by_group(group_label)
+                    self.register_vocabulary(group_label, "Group")
+                    LOG.info("Group {} was found".format(group_label))
+        except Exception as e:
+            self.log.warning("ERROR DISCOVERING LIFX LIGHTS. FUNCTIONALITY MIGHT BE WONKY.\n{}".format(str(e)))
+        if len(self.lights.items()) == 0:
+            self.log.warn("NO LIGHTS FOUND DURING SEARCH.")
 
         for color_name in webcolors.css3_hex_to_names.values():
             self.register_vocabulary(color_name, "Color")
