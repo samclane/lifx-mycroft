@@ -131,9 +131,9 @@ class LifxSkill(MycroftSkill):
         if not message.data.get("_TestRunner"):
             target.set_power(power_status, duration=TRANSITION)
 
-    @removes_context("Light")
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").require("Color")
                     .optionally("_TestRunner").build())
+    @removes_context("Light")
     def handle_color_intent(self, message):
         color_str = message.data["Color"]
         rgb = webcolors.name_to_rgb(color_str)
