@@ -57,8 +57,7 @@ class LifxSkill(MycroftSkill):
         except Exception as e:
             self.log.warning("ERROR DISCOVERING LIFX LIGHTS. FUNCTIONALITY MIGHT BE WONKY.\n{}".format(str(e)))
         if len(self.lights.items()) == 0:
-            self.log.warn("NO LIGHTS FOUND DURING SEARCH.")
-
+            self.log.warn("NO LIGHTS FOUND DURING SEARCH. FUNCTIONALITY MIGHT BE WONKY.")
         for color_name in webcolors.css3_hex_to_names.values():
             self.register_vocabulary(color_name, "Color")
 
@@ -85,7 +84,7 @@ class LifxSkill(MycroftSkill):
                 best_item = v
 
         if best_item is None:
-            raise KeyError("No values matching key {} in dict {{ {} }}".format(str(key), str(dict_.items())))
+            raise KeyError("No values matching key {} in dict {{ {} }}".format(str(key), str(dict_)))
 
         return best_item
 
@@ -132,9 +131,9 @@ class LifxSkill(MycroftSkill):
         if not message.data.get("_TestRunner"):
             target.set_power(power_status, duration=TRANSITION)
 
+    @removes_context("Light")
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").require("Color")
                     .optionally("_TestRunner").build())
-    @removes_context("Light")
     def handle_color_intent(self, message):
         color_str = message.data["Color"]
         rgb = webcolors.name_to_rgb(color_str)
