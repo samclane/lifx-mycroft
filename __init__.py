@@ -19,6 +19,7 @@
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_handler
 from mycroft.util.log import LOG
+from mycroft.skills.context import removes_context
 
 import lifxlan
 import lifxlan.utils
@@ -107,6 +108,7 @@ class LifxSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").one_of("Off", "On")
                     .optionally("_TestRunner").build())
+    @removes_context("Light")
     def handle_toggle_intent(self, message):
         if "Off" in message.data:
             power_status = False
@@ -127,6 +129,7 @@ class LifxSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group").require("Color")
                     .optionally("_TestRunner").build())
+    @removes_context("Light")
     def handle_color_intent(self, message):
         color_str = message.data["Color"]
         rgb = webcolors.name_to_rgb(color_str)
@@ -193,6 +196,7 @@ class LifxSkill(MycroftSkill):
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group")
                     .one_of("Brightness", "Temperature", "Saturation").require("Percent").optionally("_TestRunner")
                     .build())
+    @removes_context("Light")
     def handle_percent_intent(self, message):
         target, name = self.get_target_from_message(message)
         if "Brightness" in message.data:
