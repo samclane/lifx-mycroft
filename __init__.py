@@ -94,6 +94,9 @@ class LifxSkill(MycroftSkill):
                 best_score = score
                 best_item = v
 
+        if best_item is None:
+            raise IndexError("No values matching key {} in dict <{}>".format(str(key), str(dict_.items())))
+
         return best_item
 
     @staticmethod
