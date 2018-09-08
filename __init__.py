@@ -162,6 +162,8 @@ class LifxSkill(MycroftSkill):
             new_brightness = max(min(current_brightness + self.dim_step * (-1 if is_darkening else 1), MAX_VALUE), 0)
             target.set_brightness(new_brightness, duration=TRANSITION)
 
+        self.set_context("Light", name)
+
     @intent_handler(IntentBuilder("").require("Temperature").require("Turn").require("Light")
                     .one_of("Increase", "Decrease").optionally("_TestRunner"))
     def handle_temperature_intent(self, message):
@@ -185,6 +187,8 @@ class LifxSkill(MycroftSkill):
                 max(min(current_temperature + self.temperature_step * (1 if is_cooling else -1), MAX_COLORTEMP),
                     MIN_COLORTEMP)
             target.set_colortemp(new_temperature, duration=TRANSITION)
+
+        self.set_context("Light", name)
 
     @intent_handler(IntentBuilder("").require("Turn").one_of("Light", "Group")
                     .one_of("Brightness", "Temperature", "Saturation").require("Percent").optionally("_TestRunner")
