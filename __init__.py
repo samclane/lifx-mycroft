@@ -70,22 +70,12 @@ class LifxSkill(MycroftSkill):
     def temperature_step(self):
         return int(float(self.settings["percent_step"]) * (MAX_COLORTEMP - MIN_COLORTEMP))
 
-    def get_target_from_message(self, message):
-        if "Light" in message.data:
-            target = self.get_fuzzy_value_from_dict(message.data["Light"], self.lights)
-            name = message.data["Light"]
-        elif "Group" in message.data:
-            target = self.get_fuzzy_value_from_dict(message.data["Group"], self.groups)
-            name = message.data["Group"]
-        else:
-            assert False, "Triggered intent without Light or Group. Message: {}".format(message.data["utterance"])
-
-        return target, name
-
     @staticmethod
     def get_fuzzy_value_from_dict(key, dict_: dict):
+        if key is None:
+            raise KeyError("Key cannot be None")
+
         best_score = 0
-        score = 0
         best_item = None
 
         for k, v in dict_.items():
@@ -95,9 +85,21 @@ class LifxSkill(MycroftSkill):
                 best_item = v
 
         if best_item is None:
-            raise IndexError("No values matching key {} in dict <{}>".format(str(key), str(dict_.items())))
+            raise KeyError("No values matching key {} in dict {{ {} }}".format(str(key), str(dict_.items())))
 
         return best_item
+
+    def get_target_from_message(self, message):
+        if "Light" in message.data:
+            target = self.get_fuzzy_value_from_dict(message.data["Light"], self.lights)
+            name = message.data["Light"]
+        elif "Group" in message.data:
+            target = self.get_fuzzy_value_from_dict(message.data["Group"], self.groups)
+            name = message.data["Group"]
+        else:
+            assert False, "Triggered intent without Light or Group. Message: \"{}\"".format(message.data["utterance"])
+
+        return target, name
 
     @staticmethod
     def convert_percent_to_value(percent, type_=BRIGHTNESS):
