@@ -12,6 +12,17 @@
             "value": ".25"
           }
         ]
+      },
+      {
+        "name": "Transition Time (ms)",
+        "fields": [
+          {
+            "name": "transition_time",
+            "type": "number",
+            "label": "Time (milliseconds)",
+            "value": "1250"
+          }
+        ]
       }
     ]
   }

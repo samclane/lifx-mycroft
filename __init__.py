@@ -19,7 +19,6 @@
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_handler
 from mycroft.util.log import LOG
-from mycroft.skills.context import removes_context
 
 import lifxlan
 import lifxlan.utils
@@ -30,8 +29,6 @@ HUE, SATURATION, BRIGHTNESS, KELVIN = range(4)
 MAX_VALUE = 65535
 MAX_COLORTEMP = 9000
 MIN_COLORTEMP = 2500
-TRANSITION = 1250
-
 
 class LifxSkill(MycroftSkill):
 
@@ -63,6 +60,10 @@ class LifxSkill(MycroftSkill):
     @property
     def dim_step(self):
         return int(float(self.settings["percent_step"]) * MAX_VALUE)
+    
+    @property
+    def transition_time_ms(self):
+        return int(self.settings["transition_time"])
 
     @property
     def temperature_step(self):
@@ -121,7 +122,7 @@ class LifxSkill(MycroftSkill):
                                      'status': status_str})
 
         if not message.data.get("_TestRunner"):
-            target.set_power(power_status, duration=TRANSITION)
+            target.set_power(power_status, duration=self.transition_time_ms)
 
         self.set_context("Target", name)
 
@@ -138,7 +139,7 @@ class LifxSkill(MycroftSkill):
                                     'color': color_str})
 
         if not message.data.get("_TestRunner"):
-            target.set_color(hsbk, duration=TRANSITION)
+            target.set_color(hsbk, duration=self.transition_time_ms)
 
         self.set_context("Target", name)
 
@@ -167,7 +168,7 @@ class LifxSkill(MycroftSkill):
         if not message.data.get("_TestRunner"):
             current_brightness = target.get_color()[BRIGHTNESS]
             new_brightness = max(min(current_brightness + self.dim_step * (-1 if is_darkening else 1), MAX_VALUE), 0)
-            target.set_brightness(new_brightness, duration=TRANSITION)
+            target.set_brightness(new_brightness, duration=self.transition_time_ms)
 
         self.set_context("Target", name)
 
@@ -198,7 +199,7 @@ class LifxSkill(MycroftSkill):
             new_temperature = \
                 max(min(current_temperature + self.temperature_step * (1 if is_cooling else -1), MAX_COLORTEMP),
                     MIN_COLORTEMP)
-            target.set_colortemp(new_temperature, duration=TRANSITION)
+            target.set_colortemp(new_temperature, duration=self.transition_time_ms)
 
         self.set_context("Target", name)
 
@@ -229,7 +230,7 @@ class LifxSkill(MycroftSkill):
         if not message.data.get("_TestRunner"):
             percent = int(message.data["Percent"].strip("%"))
             value = self.convert_percent_to_value(percent, type_)
-            func(value, duration=TRANSITION)
+            func(value, duration=self.transition_time_ms)
 
         self.set_context("Target", name)
 
