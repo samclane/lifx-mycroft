@@ -30,6 +30,7 @@ MAX_VALUE = 65535
 MAX_COLORTEMP = 9000
 MIN_COLORTEMP = 2500
 
+
 class LifxSkill(MycroftSkill):
 
     def __init__(self):
