@@ -1,6 +1,5 @@
 {
-  "utterance": "turn off bedroom light",
-  "remove_context": ["Target"],
+  "utterance": "turn it off",
   "intent_type": "handle_toggle_intent",
   "intent": {
     "Turn": "turn",

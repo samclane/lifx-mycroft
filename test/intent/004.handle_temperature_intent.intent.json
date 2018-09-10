@@ -1,9 +1,10 @@
 {
   "utterance": "turn up the bedroom light temperature",
+  "remove_context": ["Target"],
   "intent_type": "handle_temperature_intent",
   "intent": {
     "Temperature": "temperature",
-    "Light": "Bedroom",
+    "Target": "Bedroom",
     "Increase": "up"
   },
   "expected_dialog": "Temperature",

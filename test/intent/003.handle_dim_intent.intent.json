@@ -1,9 +1,10 @@
 {
   "utterance": "brighten the bedroom light",
+  "remove_context": ["Target"],
   "intent_type": "handle_dim_intent",
   "intent": {
     "Increase": "brighten",
-    "Light": "Bedroom"
+    "Target": "Bedroom"
   },
   "expected_dialog": "Dim",
   "set_context": {"_TestRunner": "data", "test": ""}
