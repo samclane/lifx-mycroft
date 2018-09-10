@@ -65,6 +65,9 @@ def test_runner(skill, example, emitter, loader):
     s.lifxlan.get_lights.return_value = [s.lights["Bedroom"]]
     s.lifxlan.get_devices_by_group.return_value = [s.lights["Bedroom"]]
 
+    s.targets = {"Bedroom": MockLight(),
+                 "Room 1": MockGroup()}
+
     s.register_vocabulary("Bedroom", "Target")
     s.register_vocabulary("Room 1", "Target")
 
