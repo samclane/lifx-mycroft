@@ -65,7 +65,7 @@ def test_runner(skill, example, emitter, loader):
     s.lifxlan.get_lights.return_value = [s.lights["Bedroom"]]
     s.lifxlan.get_devices_by_group.return_value = [s.lights["Bedroom"]]
 
-    s.register_vocabulary("Bedroom", "Light")
-    s.register_vocabulary("Room 1", "Group")
+    s.register_vocabulary("Bedroom", "Target")
+    s.register_vocabulary("Room 1", "Target")
 
     return SkillTest(skill, example, emitter).run(loader)

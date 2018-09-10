@@ -15,6 +15,13 @@ This skill is currently in the skill acceptance process. In order to install, us
 * "Turn down the bedroom light."
 * "Increase the bedroom light temperature."
 
+##### lifx-mycroft also uses Contexts
+* "Turn on the bedroom light"
+* "Now turn it red"
+* "Dim it"
+
+`Turn on Bedroom Light` --> `Turn Bedroom Light red` --> `Lower Bedroom Light brightness by 25%`
+
 ## Credits 
 Sawyer McLane (@samclane)
 
