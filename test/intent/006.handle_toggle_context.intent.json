@@ -7,5 +7,5 @@
     "Target": "Bedroom"
   },
   "expected_dialog": "Switch",
-  "set_context": {"_TestRunner": "data", "test": ""}
+  "set_context": {"_TestRunner": "data", "test": "", "Target": "Bedroom"}
 }
