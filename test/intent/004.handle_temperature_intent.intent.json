@@ -1,9 +1,9 @@
 {
-  "utterance": "turn up the bedroom light temperature",
+  "utterance": "turn up the bedroom light kelvin",
   "remove_context": ["Target"],
   "intent_type": "handle_temperature_intent",
   "intent": {
-    "Temperature": "temperature",
+    "Temperature": "kelvin",
     "Target": "Bedroom",
     "Increase": "up"
   },
