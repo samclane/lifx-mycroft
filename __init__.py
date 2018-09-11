@@ -60,15 +60,15 @@ class LifxSkill(MycroftSkill):
 
     @property
     def dim_step(self):
-        return int(float(self.settings["percent_step"]) * MAX_VALUE)
+        return int(float(self.settings.get("percent_step", 0.25)) * MAX_VALUE)
     
     @property
     def transition_time_ms(self):
-        return int(self.settings["transition_time"])
+        return int(self.settings.get("transition_time", 1250))
 
     @property
     def temperature_step(self):
-        return int(float(self.settings["percent_step"]) * (MAX_COLORTEMP - MIN_COLORTEMP))
+        return int(float(self.settings.get("percent_step", 0.25)) * (MAX_COLORTEMP - MIN_COLORTEMP))
 
     @staticmethod
     def get_fuzzy_value_from_dict(key, dict_: dict):
