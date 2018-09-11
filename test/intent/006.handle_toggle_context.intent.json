@@ -1,8 +1,9 @@
 {
-  "utterance": "turn it off",
+  "utterance": "switch it off",
+  "remove_context": ["Target"],
   "intent_type": "handle_toggle_intent",
   "intent": {
-    "Turn": "turn",
+    "Turn": "switch",
     "Off": "off",
     "Target": "Bedroom"
   },
