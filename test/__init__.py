@@ -71,4 +71,7 @@ def test_runner(skill, example, emitter, loader):
     s.register_vocabulary("Bedroom", "Target")
     s.register_vocabulary("Room 1", "Target")
 
-    return SkillTest(skill, example, emitter).run(loader)
+    res = SkillTest(skill, example, emitter).run(loader)
+    if example.endswith('006.handle_toggle_context.intent.json'):
+        s.remove_context('Target')
+    return res
