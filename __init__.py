@@ -42,7 +42,7 @@ class LifxSkill(MycroftSkill):
     def initialize(self):
         try:
             for light in self.lifxlan.get_lights():
-                light: lifxlan.Light = light
+                light = light
                 self.targets[light.get_label()] = light
                 self.register_vocabulary(light.label, "Target")
                 LOG.info("{} was found".format(light.label))
@@ -71,7 +71,7 @@ class LifxSkill(MycroftSkill):
         return int(float(self.settings.get("percent_step", 0.25)) * (MAX_COLORTEMP - MIN_COLORTEMP))
 
     @staticmethod
-    def get_fuzzy_value_from_dict(key, dict_: dict):
+    def get_fuzzy_value_from_dict(key, dict_):
         if key is None:
             raise KeyError("Key cannot be None")
 
