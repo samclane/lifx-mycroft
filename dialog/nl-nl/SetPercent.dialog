@@ -1,0 +1,3 @@
+{{param}} wordt ingesteld op {{value}}.
+{{param}} wordt veranderd naar {{value}}.
+{{name}} {{param}} wordt ingesteld op {{value}}.
