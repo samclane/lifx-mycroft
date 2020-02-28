@@ -55,13 +55,13 @@ class LifxSkill(MycroftSkill):
             self.log.warning("ERROR DISCOVERING LIFX LIGHTS. FUNCTIONALITY MIGHT BE WONKY.\n{}".format(str(e)))
         if len(self.targets.items()) == 0:
             self.log.warn("NO LIGHTS FOUND DURING SEARCH. FUNCTIONALITY MIGHT BE WONKY.")
-        for color_name in webcolors.css3_hex_to_names.values():
+        for color_name in webcolors.CSS3_HEX_TO_NAMES.values():
             self.register_vocabulary(color_name, "Color")
 
     @property
     def dim_step(self):
         return int(float(self.settings.get("percent_step", 0.25)) * MAX_VALUE)
-    
+
     @property
     def transition_time_ms(self):
         return int(self.settings.get("transition_time", 1250))

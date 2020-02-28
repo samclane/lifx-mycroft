@@ -1,4 +1,4 @@
 #This file is a list of all pip requirements for your skill (if needed)
-webcolors
+webcolors>=1.11.1
 fuzzywuzzy
 lifxlan
